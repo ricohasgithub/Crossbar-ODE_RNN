@@ -113,7 +113,7 @@ for i in range(1):
     t = model.node_rnn.observer.history[1].view(-1).detach()
 
     ax1.plot(t,
-             model.linear(torch.transpose(H, 0, 1)).view(-1).detach(),
+             model.linear_out(torch.transpose(H, 0, 1)).view(-1).detach(),
              ':',
              linewidth=0.5,
              color='k')
