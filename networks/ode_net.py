@@ -5,13 +5,11 @@ from utils.linear import Linear
 from crossbar.crossbar import crossbar
 from utils.observer import Observer
 
-class ODE_Net(nn.Module):
-
-    """ Basic ODE Net Layer implementing Euler's Method (to be expanded to higher order solvers)"""
+class Abstract_ODE_Net(nn.Module):
 
     def __init__(self, hidden_layer_size, N, cb, observer):
 
-        super(ODE_Net, self).__init__()
+        super(Abstract_ODE_Net, self).__init__()
 
         # Set instance variables
         self.hidden_layer_size = hidden_layer_size
@@ -23,6 +21,25 @@ class ODE_Net(nn.Module):
 
         self.observer_flag = False
         self.observer = observer
+    
+    def forward(self, x0, t0, t1):
+        pass
+    
+    def remap(self):
+        self.linear.remap()
+       
+    def use_cb(self, state):
+        self.linear.use_cb(state)
+
+    def observe(self, state):
+        self.observer.on = state
+
+class Euler_Forward_ODE_Net(Abstract_ODE_Net):
+
+    """ Basic ODE Net Layer implementing Euler's Method (to be expanded to higher order solvers)"""
+
+    def __init__(self, hidden_layer_size, N, cb, observer):
+        super(Euler_Forward_ODE_Net, self).__init__(hidden_layer_size, N, cb, observer)
     
     def forward(self, x0, t0, t1):
         x, h = x0, (t1 - t0) / self.N

@@ -5,7 +5,7 @@ import torch.nn as nn
 from utils.linear import Linear
 from crossbar.crossbar import crossbar
 from utils.observer import Observer
-from networks.ode_net import ODE_Net
+from networks.ode_net import Euler_Forward_ODE_Net
 
 class NODE_RNN(nn.Module):
 
@@ -25,7 +25,7 @@ class NODE_RNN(nn.Module):
         self.hidden_layer_size = hidden_layer_size
         self.linear_hidden = Linear(hidden_layer_size, hidden_layer_size, self.cb)
 
-        self.solve = ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
+        self.solve = Euler_Forward_ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
         self.nonlinear = nn.Tanh()
 
     # Taking a sequence, this predicts the next N points, where
