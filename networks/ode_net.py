@@ -5,6 +5,8 @@ from utils.linear import Linear
 from crossbar.crossbar import crossbar
 from utils.observer import Observer
 
+from torchdiffeq import odeint
+
 class Abstract_ODE_Net(nn.Module):
 
     def __init__(self, hidden_layer_size, N, cb, observer):
@@ -57,3 +59,14 @@ class Euler_Forward_ODE_Net(Abstract_ODE_Net):
 
     def observe(self, state):
         self.observer.on = state
+
+class ODE_Net(Abstract_ODE_Net):
+
+    def __init__(self, hidden_layer_size, N, cb, observer):
+        super(ODE_Net, self).__init__(hidden_layer_size, N, cb, observer)
+        self.integration_time = torch.tensor([0, 1]).float()
+
+    def forward(self, x0, t0, t1):
+        self.integration_time = self.integration_time.type_as(x0)
+        out = odeint(self.linear, x0, self.integration_time, 1e-3, 1e-3)
+        return out[1]
