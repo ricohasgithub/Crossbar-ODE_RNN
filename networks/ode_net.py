@@ -5,13 +5,13 @@ import utils.linear as Linear
 import utils.observer
 from crossbar import crossbar
 
-class ODE_Block(nn.Module):
+class ODE_Net(nn.Module):
 
-    """ Basic ODE_Block implementing Euler's Method (to be expanded to higher order solvers)"""
+    """ Basic ODE Net implementing Euler's Method (to be expanded to higher order solvers)"""
 
     def __init__(self, hidden_layer_size, N, cb, observer):
 
-        super(ODE_Block, self).__init__()
+        super(ODE_Net, self).__init__()
 
         # Set instance variables
         self.hidden_layer_size = hidden_layer_size
