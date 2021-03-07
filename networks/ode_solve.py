@@ -5,31 +5,31 @@ import utils.linear as Linear
 import utils.observer
 from crossbar import crossbar
 
-class ODE_Solve(nn.Module):
+class ODE_Block(nn.Module):
 
-    """ Basic ODE Solver implementing Euler's Method (to be expanded to higher order solvers)"""
+    """ Basic ODE_Block implementing Euler's Method (to be expanded to higher order solvers)"""
 
     def __init__(self, hidden_layer_size, N, cb, observer):
 
-        super(ODE_Solve, self).__init__()
+        super(ODE_Block, self).__init__()
 
         # Set instance variables
         self.hidden_layer_size = hidden_layer_size
         self.cb = cb
         self.N = N
-        self.linear = Linear.Linear(hidden_layer_size, hidden_layer_size, cb)
 
+        self.linear = Linear.Linear(hidden_layer_size, hidden_layer_size, cb)
         self.nonlinear = nn.Tanh()
 
         self.observer_flag = False
         self.observer = observer
     
     def forward(self, x0, t0, t1):
-        #self.observer_flag = True
         x, h = x0, (t1 - t0) / self.N
         for i in range(self.N):
             x = x + h * self.nonlinear(self.linear(x))
-            if self.observer_flag: self.observer.append(x.view(1, -1), t0 + h*i)
+            if self.observer_flag:
+                self.observer.append(x.view(1, -1), t0 + h*i)
         return x
     
     def remap(self):
