@@ -24,8 +24,8 @@ part e) Prediction of RNN-ODE vs. prediction of RNN with similar amount of weigh
 """
 
 import torch
-import networks.rnn_ode as rnn_ode
 import train
+from networks.ode_rnn import ODE_RNN
 
 import time
 import random
@@ -84,9 +84,9 @@ for i in range(1):
     print("Model", i, "| elapsed time:", "{:5.2f}".format(
         (time.time() - start_time) / 60), "min")
 
-    model = rnn_ode.RNN_ODE(1, 4, 1, device_params, time_steps)
+    model = ODE_RNN(1, 4, 1, device_params, time_steps)
     losses = train.train(train_data, model, epochs)
-    model.node_rnn.observe(True)
+    model.observe(True)
     # model.use_cb(True)
 
     output, times = train.test(
@@ -109,11 +109,11 @@ for i in range(1):
              )
 
     # Interpolation data
-    H = model.node_rnn.observer.history[0].detach()
-    t = model.node_rnn.observer.history[1].view(-1).detach()
+    H = model.observer.history[0].detach()
+    t = model.observer.history[1].view(-1).detach()
 
     ax1.plot(t,
-             model.linear(torch.transpose(H, 0, 1)).view(-1).detach(),
+             model.linear_out(torch.transpose(H, 0, 1)).view(-1).detach(),
              ':',
              linewidth=0.5,
              color='k')

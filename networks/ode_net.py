@@ -1,13 +1,13 @@
 import torch
 import torch.nn as nn
 
-import utils.linear as Linear
-import utils.observer
-from crossbar import crossbar
+from utils.linear import Linear
+from crossbar.crossbar import crossbar
+from utils.observer import Observer
 
 class ODE_Net(nn.Module):
 
-    """ Basic ODE Net implementing Euler's Method (to be expanded to higher order solvers)"""
+    """ Basic ODE Net Layer implementing Euler's Method (to be expanded to higher order solvers)"""
 
     def __init__(self, hidden_layer_size, N, cb, observer):
 
@@ -18,7 +18,7 @@ class ODE_Net(nn.Module):
         self.cb = cb
         self.N = N
 
-        self.linear = Linear.Linear(hidden_layer_size, hidden_layer_size, cb)
+        self.linear = Linear(hidden_layer_size, hidden_layer_size, cb)
         self.nonlinear = nn.Tanh()
 
         self.observer_flag = False

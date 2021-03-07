@@ -2,11 +2,10 @@
 import torch
 import torch.nn as nn
 
-import crossbar.crossbar
-import utils.linear as Linear
-import utils.observer
-
-import networks.ode_net
+from utils.linear import Linear
+from crossbar.crossbar import crossbar
+from utils.observer import Observer
+from networks.ode_net import ODE_Net
 
 class ODE_RNN(nn.Module):
 
@@ -16,20 +15,20 @@ class ODE_RNN(nn.Module):
 
         self.N = time_steps
 
-        self.observer = observer.observer()
-        self.cb = crossbar.crossbar(device_params)
+        self.observer = Observer()
+        self.cb = crossbar(device_params)
 
         # Construct model and layers
         self.input_size = input_size
-        self.linear_in = Linear.Linear(input_size, hidden_layer_size, self.cb)
+        self.linear_in = Linear(input_size, hidden_layer_size, self.cb)
 
         self.hidden_layer_size = hidden_layer_size
-        self.linear_hidden = Linear.Linear(hidden_layer_size, hidden_layer_size, self.cb)
+        self.linear_hidden = Linear(hidden_layer_size, hidden_layer_size, self.cb)
 
         self.output_size = output_size
-        self.linear_out = Linear.Linear(hidden_layer_size, output_size, self.cb)
+        self.linear_out = Linear(hidden_layer_size, output_size, self.cb)
 
-        self.solve = ODE_RNN(hidden_layer_size, time_steps, self.cb, self.observer)
+        self.solve = ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
         self.nonlinear = nn.Tanh()
 
     # Taking a sequence, this predicts the next N points, where
@@ -67,3 +66,6 @@ class ODE_RNN(nn.Module):
         self.linear_hidden.use_cb(state)
         self.solve.use_cb(state)
         self.linear_out.use_cb(state)
+
+    def observe(self, state):
+        self.observer.on = state
