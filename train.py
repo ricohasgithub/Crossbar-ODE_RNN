@@ -13,7 +13,7 @@ def train(examples, model, epochs):
         for i, (example, label) in enumerate(examples):
             
             optimizer.zero_grad()
-            prediction = model(*example)
+            prediction = model(example)
             loss = loss_function(prediction, label)
             epoch_loss.append(loss)
             loss.backward()
@@ -32,7 +32,7 @@ def test(seq, t, length, model):
     
     with torch.no_grad():
         for i in range(length):
-            prediction = model(*(seq, t + dt)).reshape(1, -1, 1)
+            prediction = model((seq, t + dt)).reshape(1, -1, 1)
             seq = torch.cat((seq[1:], prediction), axis=0)
             all_t.append(t[-1].unsqueeze(0) + dt.unsqueeze(0))
             t = torch.cat((t[1:], t[-1].unsqueeze(0) + dt.unsqueeze(0)), axis=0)

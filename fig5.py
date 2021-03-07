@@ -86,7 +86,7 @@ for i in range(1):
 
     model = ODE_RNN(1, 4, 1, device_params, time_steps)
     losses = train.train(train_data, model, epochs)
-    model.observe(True)
+    model.node_rnn.observe(True)
     # model.use_cb(True)
 
     output, times = train.test(
@@ -109,11 +109,11 @@ for i in range(1):
              )
 
     # Interpolation data
-    H = model.observer.history[0].detach()
-    t = model.observer.history[1].view(-1).detach()
+    H = model.node_rnn.observer.history[0].detach()
+    t = model.node_rnn.observer.history[1].view(-1).detach()
 
     ax1.plot(t,
-             model.linear_out(torch.transpose(H, 0, 1)).view(-1).detach(),
+             model.linear(torch.transpose(H, 0, 1)).view(-1).detach(),
              ':',
              linewidth=0.5,
              color='k')
