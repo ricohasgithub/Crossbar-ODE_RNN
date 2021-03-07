@@ -53,15 +53,17 @@ class ODE_RNN(nn.Module):
 
             self.solve.observer_flag = False
 
-        return h_i
+        return self.linear_out(h_i)
 
     def remap(self):
         self.cb.clear()
         self.linear_in.remap()
         self.linear_hidden.remap()
+        self.solve.remap()
         self.linear_out.remap()
     
     def use_cb(self, state):
         self.linear_in.use_cb(state)
         self.linear_hidden.use_cb(state)
         self.solve.use_cb(state)
+        self.linear_out.use_cb(state)

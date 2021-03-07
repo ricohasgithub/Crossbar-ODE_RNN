@@ -31,7 +31,6 @@ import time
 import random
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 
 pi = 3.14159265359
 
@@ -73,13 +72,6 @@ train_data, test_start = data[:cutoff], data[cutoff]
 fig1, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
 
 fig3, ax3 = plt.subplots()
-
-fig5, ax_cmap = plt.subplots(ncols=5, figsize=(20, 3))
-cmap = sns.diverging_palette(250, 300, s=90, as_cmap=True)
-
-for ax in ax_cmap:
-    ax.set(xticklabels=[])
-    ax.set(yticklabels=[])
 
 # TRAIN MODELS AND PLOT
 time_steps = 50
@@ -155,9 +147,6 @@ for i in range(1):
                           * 2+coord[3]*2] for coord in model.cb.mapped] + [model.cb.W]
     vmax = max(torch.max(weight) for weight in weights)
     vmin = min(torch.min(weight) for weight in weights)
-    for i, weight in enumerate(weights):
-        sns.heatmap(weight, vmax=vmax, vmin=vmin, cmap=cmap,
-                    square=True, cbar=False, ax=ax_cmap[i])
 
 ax1.plot(x.squeeze()[:cutoff+num_predict+tw], y.squeeze()[:cutoff +
                                                           num_predict+tw], linewidth=0.5, color='k', linestyle='dashed')
