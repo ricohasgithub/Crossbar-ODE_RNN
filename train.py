@@ -22,6 +22,8 @@ def train(examples, model, epochs):
         loss_history.append(sum(epoch_loss) / len(examples))
         epoch_loss = []
 
+        print(epoch_loss)
+
     return loss_history
 
 def test(seq, t, length, model):
