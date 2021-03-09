@@ -25,7 +25,8 @@ class NODE_RNN(nn.Module):
         self.hidden_layer_size = hidden_layer_size
         self.linear_hidden = Linear(hidden_layer_size, hidden_layer_size, self.cb)
 
-        self.solve = Euler_Forward_ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
+        # Append ODE Solver
+        self.solve = ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
         self.nonlinear = nn.Tanh()
 
     # Taking a sequence, this predicts the next N points, where

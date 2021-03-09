@@ -16,6 +16,7 @@ class Abstract_ODE_Net(nn.Module):
         # Set instance variables
         self.hidden_layer_size = hidden_layer_size
         self.cb = cb
+        # N is a parallel to NFE (number of function evaluations)
         self.N = N
 
         self.linear = Linear(hidden_layer_size, hidden_layer_size, cb)
@@ -24,7 +25,7 @@ class Abstract_ODE_Net(nn.Module):
         self.observer_flag = False
         self.observer = observer
     
-    def forward(self, x0, t0, t1):
+    def forward(self, t, x):
         pass
     
     def remap(self):
@@ -60,13 +61,24 @@ class Euler_Forward_ODE_Net(Abstract_ODE_Net):
     def observe(self, state):
         self.observer.on = state
 
-class ODE_Net(Abstract_ODE_Net):
+class ODE_Func(Abstract_ODE_Net):
 
     def __init__(self, hidden_layer_size, N, cb, observer):
-        super(ODE_Net, self).__init__(hidden_layer_size, N, cb, observer)
-        self.integration_time = torch.tensor([0, 1]).float()
+        super(ODE_Func, self).__init__(hidden_layer_size, N, cb, observer)
+
+    def forward(self, t, x):
+        out = x + self.nonlinear(self.linear(x))
+        return out
+
+class ODE_Net(nn.Module):
+
+    def __init__(self, hidden_layer_size, N, cb, observer):
+        super(ODE_Net, self).__init__()
+        self.ODE_Func = ODE_Func(hidden_layer_size, N, cb, observer)
 
     def forward(self, x0, t0, t1):
-        self.integration_time = self.integration_time.type_as(x0)
-        out = odeint(self.linear, x0, self.integration_time, 1e-3, 1e-3)
+        # x is the parallel to y0
+        x = x0
+        t = torch.tensor([0, 1]).float()
+        out = odeint(self.ODE_Func, x, t)
         return out[1]
