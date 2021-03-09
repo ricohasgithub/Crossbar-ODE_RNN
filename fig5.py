@@ -112,6 +112,13 @@ for i in range(1):
     H = model.node_rnn.observer.history[0].detach()
     t = model.node_rnn.observer.history[1].view(-1).detach()
 
+    print("AX1")
+    print(H)
+    print(H.size())
+    print(t)
+    print(t.size)
+    print(model.decoder(torch.transpose(H, 0, 1)).view(-1).detach())
+
     ax1.plot(t,
              model.decoder(torch.transpose(H, 0, 1)).view(-1).detach(),
              ':',
