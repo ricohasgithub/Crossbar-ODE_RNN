@@ -26,5 +26,3 @@ class ODE_Func(nn.Module):
 
     def forward(self, t, y):
         return self.net(y)
-
-        

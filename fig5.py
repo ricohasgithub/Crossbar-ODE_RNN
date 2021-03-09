@@ -109,51 +109,51 @@ for i in range(1):
              )
 
     # Interpolation data
-    # H = model.node_rnn.observer.history[0].detach()
-    # t = model.node_rnn.observer.history[1].view(-1).detach()
+    H = model.node_rnn.observer.history[0].detach()
+    t = model.node_rnn.observer.history[1].view(-1).detach()
 
-    # print("AX1")
-    # print(H)
-    # print(H.size())
-    # print(t)
-    # print(t.size)
-    # print(model.decoder(torch.transpose(H, 0, 1)).view(-1).detach())
+    print("AX1")
+    print(H)
+    print(H.size())
+    print(t)
+    print(t.size)
+    print(model.decoder(torch.transpose(H, 0, 1)).view(-1).detach())
 
-    # ax1.plot(t,
-    #          model.decoder(torch.transpose(H, 0, 1)).view(-1).detach(),
-    #          ':',
-    #          linewidth=0.5,
-    #          color='k')
+    ax1.plot(t,
+             model.decoder(torch.transpose(H, 0, 1)).view(-1).detach(),
+             ':',
+             linewidth=0.5,
+             color='k')
 
-    # ax2.plot(t,
-    #          torch.linalg.norm(H, ord=2, dim=1).view(-1),
-    #          ':',
-    #          linewidth=0.5,
-    #          color='k')
+    ax2.plot(t,
+             torch.linalg.norm(H, ord=2, dim=1).view(-1),
+             ':',
+             linewidth=0.5,
+             color='k')
 
-    # ax2.scatter(t[::(time_steps + 2)],
-    #             torch.linalg.norm(H, ord=2, dim=1)[::(time_steps + 2)],
-    #             linewidth=0.5,
-    #             edgecolors='k',
-    #             facecolors='none')
+    ax2.scatter(t[::(time_steps + 2)],
+                torch.linalg.norm(H, ord=2, dim=1)[::(time_steps + 2)],
+                linewidth=0.5,
+                edgecolors='k',
+                facecolors='none')
 
-    # ax3.plot(list(range(epochs)),
-    #          losses,
-    #          linewidth=0.5,
-    #          color='pink')
+    ax3.plot(list(range(epochs)),
+             losses,
+             linewidth=0.5,
+             color='pink')
 
-    # unmapped_weights = torch.cat(
-    #     [tensor.reshape(-1).detach() for tensor in model.cb.tensors], axis=0)
+    unmapped_weights = torch.cat(
+        [tensor.reshape(-1).detach() for tensor in model.cb.tensors], axis=0)
 
-    # left_mapped_weights = torch.cat([model.cb.W[m[0]:m[0]+m[2], m[1]:m[1]+m[3]:2].reshape(-1).detach()
-    #                                  for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
-    # right_mapped_weights = torch.cat([model.cb.W[m[0]+1:m[0]+m[2]+1, m[1]+1:m[1]+m[3] +
-    #                                              1:2].reshape(-1).detach() for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
+    left_mapped_weights = torch.cat([model.cb.W[m[0]:m[0]+m[2], m[1]:m[1]+m[3]:2].reshape(-1).detach()
+                                     for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
+    right_mapped_weights = torch.cat([model.cb.W[m[0]+1:m[0]+m[2]+1, m[1]+1:m[1]+m[3] +
+                                                 1:2].reshape(-1).detach() for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
 
-    # weights = [model.cb.W[coord[0]:coord[0]+coord[2], coord[1]*2:coord[1]
-    #                       * 2+coord[3]*2] for coord in model.cb.mapped] + [model.cb.W]
-    # vmax = max(torch.max(weight) for weight in weights)
-    # vmin = min(torch.min(weight) for weight in weights)
+    weights = [model.cb.W[coord[0]:coord[0]+coord[2], coord[1]*2:coord[1]
+                          * 2+coord[3]*2] for coord in model.cb.mapped] + [model.cb.W]
+    vmax = max(torch.max(weight) for weight in weights)
+    vmin = min(torch.min(weight) for weight in weights)
 
 ax1.plot(x.squeeze()[:cutoff+num_predict+tw], y.squeeze()[:cutoff +
                                                           num_predict+tw], linewidth=0.5, color='k', linestyle='dashed')
