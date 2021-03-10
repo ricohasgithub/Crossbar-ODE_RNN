@@ -14,6 +14,8 @@ def train(examples, model, epochs):
             
             optimizer.zero_grad()
             prediction = model(example)
+            # print("PREDICTION: ", prediction.size())
+            # print("LABEL: ", label.size())
             loss = loss_function(prediction, label)
             epoch_loss.append(loss)
             loss.backward()
