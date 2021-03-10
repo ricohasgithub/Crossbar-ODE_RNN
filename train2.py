@@ -30,6 +30,7 @@ tensor_x = x.to()
 tensor_y = y.to()
 # print(tensor_y.size())
 
+# This function takes in an index and returns a batch of size 10 for both time and the matching y value; see ode_demo for the original neural ode implementation
 def get_batch(index):
     batch_y0 = tensor_y[0][index:index+tw]
     batch_t = tensor_x[0][index:index+tw]
