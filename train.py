@@ -34,6 +34,8 @@ def test(seq, t, length, model):
     
     with torch.no_grad():
         for i in range(length):
+            print(seq)
+            print(seq.size())
             prediction = model((seq, t + dt)).reshape(1, -1, 1)
             seq = torch.cat((seq[1:], prediction), axis=0)
             all_t.append(t[-1].unsqueeze(0) + dt.unsqueeze(0))
