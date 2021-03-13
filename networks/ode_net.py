@@ -71,6 +71,8 @@ class ODE_Net(Abstract_ODE_Net):
         # x is the parallel to y0
         # t = torch.tensor([0, self.N]).float()
         out = odeint(self.ODE_Func, t, x)
+        # print("OUT1: ", out)
+        # print(out.size())
         return out[1]
 
     def ODE_Func(self, t, x):

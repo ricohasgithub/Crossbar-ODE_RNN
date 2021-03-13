@@ -40,11 +40,18 @@ class NODE_RNN(nn.Module):
             
             # Solve step
             #h_i = self.solve(h_i, t[i-1] if i>0 else t[i], t[i])
-            t_i = (t[i] - t[i]) / self.N
             
-            if i>0:
-                t_i = (t[i] - t[i-1])/self.N
+            # t_i = (t[i] - t[i]) / self.N
 
+            # if i>0:
+            #     t_i = (t[i] - t[i-1])/self.N
+
+            # print("t_i: ", t_i)
+            # print(t_i.size())
+            # print("t: ", t)
+            # print(t.size())
+
+            # h_i = self.solve(h_i, t_i.view(-1))
             h_i = self.solve(h_i, t.view(-1))
             
             if i == (len(x) - 1):

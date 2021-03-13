@@ -7,7 +7,7 @@ def train(examples, model, epochs):
     loss_function = torch.nn.MSELoss()
     loss_history = []
 
-    for epoch in range(epochs-1):
+    for epoch in range(epochs):
 
         epoch_loss = []
         for i, (example, label) in enumerate(examples):
