@@ -7,25 +7,22 @@ def train(examples, model, epochs):
     loss_function = torch.nn.MSELoss()
     loss_history = []
 
-    for epoch in range(epochs):
+    for epoch in range(epochs-1):
 
         epoch_loss = []
         for i, (example, label) in enumerate(examples):
-            
             optimizer.zero_grad()
             prediction = model(example)
-            # print("PREDICTION: ", prediction.size())
-            # print("LABEL: ", label.size())
+            # print("PREDICTION: ", prediction)
+            # print("LABEL: ", label)
             loss = loss_function(prediction, label)
             epoch_loss.append(loss)
             loss.backward()
             optimizer.step()
         
+        print("TIME: ", epoch)
         loss_history.append(sum(epoch_loss) / len(examples))
         epoch_loss = []
-
-        print("epoch: ", epoch)
-        print("loss: ", sum(epoch_loss) / len(examples))
 
     return loss_history
 

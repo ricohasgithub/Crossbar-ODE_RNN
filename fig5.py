@@ -81,8 +81,7 @@ start_time = time.time()
 
 for i in range(1):
 
-    print("Model", i, "| elapsed time:", "{:5.2f}".format(
-        (time.time() - start_time) / 60), "min")
+    print("Model", i, "| elapsed time:", "{:5.2f}".format((time.time() - start_time) / 60), "min")
 
     model = ODE_RNN(1, 4, 1, device_params, time_steps)
     losses = train.train(train_data, model, epochs)
@@ -104,7 +103,7 @@ for i in range(1):
                  (y.view(-1)[cutoff + tw - 1].view(-1), output.view(-1)), axis=0),
              'o-',
              linewidth=0.5,
-             color='k',
+             color='blue',
              markerfacecolor='none',
              )
 
@@ -112,18 +111,11 @@ for i in range(1):
     H = model.node_rnn.observer.history[0].detach()
     t = model.node_rnn.observer.history[1].view(-1).detach()
 
-    print("AX1")
-    print(H)
-    print(H.size())
-    print(t)
-    print(t.size)
-    print(model.decoder(torch.transpose(H, 0, 1)).view(-1).detach())
-
     ax1.plot(t,
              model.decoder(torch.transpose(H, 0, 1)).view(-1).detach(),
              ':',
              linewidth=0.5,
-             color='k')
+             color='orange')
 
     ax2.plot(t,
              torch.linalg.norm(H, ord=2, dim=1).view(-1),

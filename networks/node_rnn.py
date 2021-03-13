@@ -26,7 +26,7 @@ class NODE_RNN(nn.Module):
         self.linear_hidden = Linear(hidden_layer_size, hidden_layer_size, self.cb)
 
         # Append ODE Solver
-        self.solve = Euler_Forward_ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
+        self.solve = ODE_Net(hidden_layer_size, self.N, self.cb, self.observer)
         self.nonlinear = nn.Tanh()
 
     # Taking a sequence, this predicts the next N points, where
@@ -38,7 +38,9 @@ class NODE_RNN(nn.Module):
             if i == (len(x) - 1) and self.observer.on == True:
                 self.solve.observer_flag = True
             
-            h_i = self.solve(h_i, t[i-1] if i>0 else t[i], t[i])
+            # Solve step
+            #h_i = self.solve(h_i, t[i-1] if i>0 else t[i], t[i])
+            h_i = self.solve(h_i, t.view(-1))
             
             if i == (len(x) - 1):
                 self.observer.append(h_i.view(1, -1), t[i])
