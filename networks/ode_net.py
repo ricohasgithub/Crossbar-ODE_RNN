@@ -46,21 +46,15 @@ class Euler_Forward_ODE_Net(Abstract_ODE_Net):
     
     def forward(self, x0, t0, t1):
         x, h = x0, (t1 - t0) / self.N
+        # ODE Solve
         for i in range(self.N):
             x = x + h * self.nonlinear(self.linear(x))
             if self.observer_flag:
                 #self.observer.append(x.view(1, -1), t0 + h*i)
+                print("OUT: ", x.size())
+                print("T: ", (t0 + h*i).size())
                 self.observer.append(x.view(1, -1), t0 + h*i)
         return x
-    
-    def remap(self):
-        self.linear.remap()
-       
-    def use_cb(self, state):
-        self.linear.use_cb(state)
-
-    def observe(self, state):
-        self.observer.on = state
 
 class ODE_Net(Abstract_ODE_Net):
 
@@ -70,7 +64,7 @@ class ODE_Net(Abstract_ODE_Net):
     def forward(self, t, x):
         # x is the parallel to y0
         # t = torch.tensor([0, self.N]).float()
-        out = odeint(self.ODE_Func, t, x)
+        out = odeint(self.ODE_Func, x, t)
         # print("OUT1: ", out)
         # print(out.size())
         return out[1]
@@ -80,5 +74,5 @@ class ODE_Net(Abstract_ODE_Net):
         if self.observer_flag:
             print("OUT: ", out.size())
             print("T: ", t.size())
-            self.observer.append(out.view(1, -1), t)
+            #self.observer.append(out.view(1, -1), t)
         return out

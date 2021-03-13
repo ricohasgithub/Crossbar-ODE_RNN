@@ -14,8 +14,10 @@ class Observer():
             self.history[0] = tensor1
         else:
             self.history[0] = torch.cat((self.history[0], tensor1), axis=0)
+            #self.history[0] = torch.stack((self.history[0], tensor1), axis=0)
         
         if self.history[1] is None:
             self.history[1] = tensor2
         else:
             self.history[1] = torch.cat((self.history[1], tensor2), axis=0)
+            #self.history[1] = torch.cat((self.history[1], tensor2), axis=0)

@@ -38,21 +38,13 @@ class NODE_RNN(nn.Module):
             if i == (len(x) - 1) and self.observer.on == True:
                 self.solve.observer_flag = True
             
-            # Solve step
+            # Solve step for Euler Forward
             #h_i = self.solve(h_i, t[i-1] if i>0 else t[i], t[i])
-            
-            # t_i = (t[i] - t[i]) / self.N
 
-            # if i>0:
-            #     t_i = (t[i] - t[i-1])/self.N
-
-            # print("t_i: ", t_i)
-            # print(t_i.size())
-            # print("t: ", t)
-            # print(t.size())
-
-            # h_i = self.solve(h_i, t_i.view(-1))
-            h_i = self.solve(h_i, t.view(-1))
+            # Solve step for ODEint Net
+            # print("tsize: ", t.size())
+            # print("tsize: ", t.view(-1).size())
+            h_i = self.solve(t.view(-1), h_i)
             
             if i == (len(x) - 1):
                 self.observer.append(h_i.view(1, -1), t[i])
