@@ -69,10 +69,10 @@ for epoch in range(epochs):
     index += 1
 
     prediction = odeint(ode_func, batch_y0, batch_t)
-    print("PREDICTION: ", prediction.size())
-    print("LABEL: ", batch_y.size())
+    #print("PREDICTION: ", prediction.size())
+    #print("LABEL: ", batch_y.size())
     loss = torch.mean(torch.abs(prediction - batch_y))
-    print("LOSS: ", loss)
+    #print("LOSS: ", loss)
     loss.backward()
     optimizer.step()
 
@@ -104,7 +104,7 @@ with torch.no_grad():
 
 fig1, (ax1) = plt.subplots(nrows=1, sharex=True)
 output = torch.cat(output, axis=0)
-print(output.view(-1)[30:50].size())
+#print(output.view(-1)[30:50].size())
 
 ax1.plot(torch.cat(
                  (y.view(-1)[cutoff + tw - 1].view(-1), output.view(-1)[30:50]), axis=0),

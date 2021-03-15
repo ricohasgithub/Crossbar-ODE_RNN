@@ -63,16 +63,21 @@ class ODE_Net(Abstract_ODE_Net):
 
     def forward(self, t, x):
         # x is the parallel to y0
-        # t = torch.tensor([0, self.N]).float()
         out = odeint(self.ODE_Func, x, t)
         # print("OUT1: ", out)
         # print(out.size())
+        # print("T1: ", t)
+        # print(t.size())
+        # for i in t.size():
+        #     if self.observer_flag:
+        #         self.observer.apend(out[i].view(1, -1), t[i])
+        #return out
         return out[1]
 
     def ODE_Func(self, t, x):
         out = self.nonlinear(self.linear(x))
-        if self.observer_flag:
-            print("OUT: ", out.size())
-            print("T: ", t.size())
-            #self.observer.append(out.view(1, -1), t)
+        # if self.observer_flag:
+        #     print("OUT: ", out.size())
+        #     print("T: ", t)
+        #     self.observer.append(out.view(1, -1), t.reshape(-1))
         return out

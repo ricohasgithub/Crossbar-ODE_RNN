@@ -84,7 +84,7 @@ for i in range(1):
     print("Model", i, "| elapsed time:", "{:5.2f}".format((time.time() - start_time) / 60), "min")
 
     model = ODE_RNN(1, 4, 1, device_params, time_steps)
-    torch.save(model.state_dict(), "output/models/model.pt")
+    # torch.save(model.state_dict(), "output/models/model.pt")
     losses = train.train(train_data, model, epochs)
     model.node_rnn.observe(True)
     # model.use_cb(True)
