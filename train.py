@@ -13,14 +13,14 @@ def train(examples, model, epochs):
         for i, (example, label) in enumerate(examples):
             optimizer.zero_grad()
             prediction = model(example)
-            # print("PREDICTION: ", prediction)
+            #print("PREDICTION: ", prediction.size())
             # print("LABEL: ", label)
             loss = loss_function(prediction, label)
             epoch_loss.append(loss)
             loss.backward()
             optimizer.step()
         
-        print("TIME: ", epoch)
+        print("EPOCH: ", epoch)
         loss_history.append(sum(epoch_loss) / len(examples))
         epoch_loss = []
 

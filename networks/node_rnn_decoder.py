@@ -18,9 +18,11 @@ class NODE_RNN_Decoder(nn.Module):
         # Construct model and layers
         self.output_size = output_size
         self.linear_out = Linear(hidden_layer_size, output_size, self.cb)
+        self.nonlinear = nn.Tanh()
 
     # Taking a sequence, this predicts the next N points, where
     def forward(self, data):
+        #return self.nonlinear(self.linear_out(data))
         return self.linear_out(data)
 
     def remap(self):

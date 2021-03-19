@@ -53,12 +53,12 @@ device_params = {"Vdd": 0.2,
                  "r_cmos_line": 600,
                  "r_cmos_transistor": 20,
                  "p_stuck_on": 0.001,
-                 "p_stuck_off": 0.001}
+                 "p_stuck_off": 0.001,}
 
 # MAKE DATA
 n_pts = 150
 size = 1
-tw = 10
+tw = 25
 cutoff = 50
 #x = torch.rand(1, n_pts) * 24 * pi
 #x = torch.sort(x, axis=1)[0]
@@ -104,7 +104,7 @@ for i in range(1):
                  (y.view(-1)[cutoff + tw - 1].view(-1), output.view(-1)), axis=0),
              'o-',
              linewidth=0.5,
-             color='blue',
+             color='black',
              markerfacecolor='none',
              )
 
@@ -116,7 +116,7 @@ for i in range(1):
              model.decoder(torch.transpose(H, 0, 1)).view(-1).detach(),
              ':',
              linewidth=0.5,
-             color='orange')
+             color='red')
 
     ax2.plot(t,
              torch.linalg.norm(H, ord=2, dim=1).view(-1),
@@ -130,10 +130,11 @@ for i in range(1):
                 edgecolors='k',
                 facecolors='none')
 
+    #
     ax3.plot(list(range(epochs)),
              losses,
-             linewidth=0.5,
-             color='pink')
+             linewidth=0.5, marker = 's',
+             color='black')
 
     unmapped_weights = torch.cat(
         [tensor.reshape(-1).detach() for tensor in model.cb.tensors], axis=0)

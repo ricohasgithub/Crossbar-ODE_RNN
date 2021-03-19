@@ -20,6 +20,7 @@ class Abstract_ODE_Net(nn.Module):
         self.N = N
 
         self.linear = Linear(hidden_layer_size, hidden_layer_size, cb)
+        #self.linear2 = Linear(hidden_layer_size, hidden_layer_size, cb)
         self.nonlinear = nn.Tanh()
 
         self.observer_flag = False
@@ -51,8 +52,8 @@ class Euler_Forward_ODE_Net(Abstract_ODE_Net):
             x = x + h * self.nonlinear(self.linear(x))
             if self.observer_flag:
                 #self.observer.append(x.view(1, -1), t0 + h*i)
-                print("OUT: ", x.size())
-                print("T: ", (t0 + h*i).size())
+                # print("OUT: ", x.size())
+                # print("T: ", (t0 + h*i).size())
                 self.observer.append(x.view(1, -1), t0 + h*i)
         return x
 
@@ -75,7 +76,7 @@ class ODE_Net(Abstract_ODE_Net):
         return out[1]
 
     def ODE_Func(self, t, x):
-        out = self.nonlinear(self.linear(x))
+        out = self.nonlinear(self.linear2(self.linear(x)))
         # if self.observer_flag:
         #     print("OUT: ", out.size())
         #     print("T: ", t)
