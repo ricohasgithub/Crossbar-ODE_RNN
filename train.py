@@ -5,26 +5,46 @@ def train(examples, model, epochs):
     
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     loss_function = torch.nn.MSELoss()
-    loss_history = []
+
+    training_loss_history = []
+    validation_loss_history = []
+
+    # Split data into training and validation
+    example_data_length = len(examples)
+    val_split_index = example_data_length - int(0.25 * example_data_length)
 
     for epoch in range(epochs):
 
-        epoch_loss = []
+        training_loss = []
+        validation_loss = []
+
         for i, (example, label) in enumerate(examples):
-            optimizer.zero_grad()
-            prediction = model(example)
-            #print("PREDICTION: ", prediction.size())
-            # print("LABEL: ", label)
-            loss = loss_function(prediction, label)
-            epoch_loss.append(loss)
-            loss.backward()
-            optimizer.step()
+
+            # Validation
+            if i > val_split_index:
+                with torch.no_grad():
+                    prediction = model(example)
+                    loss = loss_function(prediction, label)
+                    pass
+            else:
+                # Training
+                optimizer.zero_grad()
+                prediction = model(example)
+                #print("PREDICTION: ", prediction.size())
+                # print("LABEL: ", label)
+                loss = loss_function(prediction, label)
+                training_loss.append(loss)
+                loss.backward()
+                optimizer.step()
         
         print("EPOCH: ", epoch)
-        loss_history.append(sum(epoch_loss) / len(examples))
-        epoch_loss = []
+        training_loss_history.append(sum(training_loss) / val_split_index)
+        validation_loss_history.append(sum(validation_loss) / (example_data_length - val_split_index))
+        
+        training_loss = []
+        validation_loss = []
 
-    return loss_history
+    return training_loss_history, validation_loss_history
 
 def test(seq, t, length, model):
 

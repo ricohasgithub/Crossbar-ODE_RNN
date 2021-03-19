@@ -35,25 +35,25 @@ import numpy as np
 pi = 3.14159265359
 
 # DEVICE PARAMS for convenience.
-device_params = {"Vdd": 0.2,
+device_params = {"Vdd": 1.8,
                  "r_wl": 20,
                  "r_bl": 20,
                  "m": 32,
                  "n": 32,
-                 "r_on_mean": 1e4,
-                 "r_on_stddev": 1e3,
-                 "r_off_mean": 1e5,
-                 "r_off_stddev": 1e4,
+                 "r_on": 1e4,
+                 "r_off": 1e5,
                  "dac_resolution": 4,
                  "adc_resolution": 14,
-                 "device_resolution": 4,
                  "bias_scheme": 1/3,
                  "tile_rows": 8,
                  "tile_cols": 8,
                  "r_cmos_line": 600,
-                 "r_cmos_transistor": 20,
-                 "p_stuck_on": 0.001,
-                 "p_stuck_off": 0.001,}
+                 "r_cmos_transistor": 20, 
+                 "p_stuck_on": 0.01,
+                 "p_stuck_off": 0.01,
+                 "method": "viability",
+                 "viability": 0.2,
+}
 
 # MAKE DATA
 n_pts = 150
@@ -85,7 +85,7 @@ for i in range(1):
 
     model = ODE_RNN(1, 4, 1, device_params, time_steps)
     # torch.save(model.state_dict(), "output/models/model.pt")
-    losses = train.train(train_data, model, epochs)
+    losses, val_losses = train.train(train_data, model, epochs)
     model.node_rnn.observe(True)
     # model.use_cb(True)
 
@@ -135,6 +135,11 @@ for i in range(1):
              losses,
              linewidth=0.5, marker = 's',
              color='black')
+
+    ax3.plot(list(range(epochs)),
+            val_losses,
+            linewidth=0.5, marker = 's',
+            color='red')
 
     unmapped_weights = torch.cat(
         [tensor.reshape(-1).detach() for tensor in model.cb.tensors], axis=0)
