@@ -15,29 +15,29 @@ def train(examples, model, epochs):
 
     for epoch in range(epochs):
 
+        print("EPOCH: ", epoch)
+
         training_loss = []
         validation_loss = []
 
         for i, (example, label) in enumerate(examples):
-
+            
             # Validation
             if i > val_split_index:
                 with torch.no_grad():
                     prediction = model(example)
                     loss = loss_function(prediction, label)
-                    pass
+                    validation_loss.append(loss)
             else:
                 # Training
                 optimizer.zero_grad()
                 prediction = model(example)
-                #print("PREDICTION: ", prediction.size())
-                # print("LABEL: ", label)
                 loss = loss_function(prediction, label)
                 training_loss.append(loss)
                 loss.backward()
                 optimizer.step()
-        
-        print("EPOCH: ", epoch)
+    
+        # Append avereage loss over batch sample to history
         training_loss_history.append(sum(training_loss) / val_split_index)
         validation_loss_history.append(sum(validation_loss) / (example_data_length - val_split_index))
         
@@ -54,8 +54,8 @@ def test(seq, t, length, model):
     
     with torch.no_grad():
         for i in range(length):
-            print(seq)
-            print(seq.size())
+            #print(seq)
+            #print(seq.size())
             prediction = model((seq, t + dt)).reshape(1, -1, 1)
             seq = torch.cat((seq[1:], prediction), axis=0)
             all_t.append(t[-1].unsqueeze(0) + dt.unsqueeze(0))

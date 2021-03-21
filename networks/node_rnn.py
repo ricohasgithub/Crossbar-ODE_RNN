@@ -44,7 +44,7 @@ class NODE_RNN(nn.Module):
             # Solve step for ODEint Net
             # print("tsize: ", t.size())
             # print("tsize: ", t.view(-1).size())
-            #h_i = self.solve(t.view(-1), h_i)
+            # h_i = self.solve(t.view(-1), h_i)
             
             if i == (len(x) - 1):
                 self.observer.append(h_i.view(1, -1), t[i])

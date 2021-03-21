@@ -51,9 +51,6 @@ class Euler_Forward_ODE_Net(Abstract_ODE_Net):
         for i in range(self.N):
             x = x + h * self.nonlinear(self.linear(x))
             if self.observer_flag:
-                #self.observer.append(x.view(1, -1), t0 + h*i)
-                # print("OUT: ", x.size())
-                # print("T: ", (t0 + h*i).size())
                 self.observer.append(x.view(1, -1), t0 + h*i)
         return x
 
@@ -72,11 +69,14 @@ class ODE_Net(Abstract_ODE_Net):
         # for i in t.size():
         #     if self.observer_flag:
         #         self.observer.apend(out[i].view(1, -1), t[i])
+        # print("x: ", x.size())
+        # print("t: ", t.size())
+        # print("out: ", out.size())
         #return out
         return out[1]
 
     def ODE_Func(self, t, x):
-        out = self.nonlinear(self.linear2(self.linear(x)))
+        out = self.nonlinear(self.linear(x))
         # if self.observer_flag:
         #     print("OUT: ", out.size())
         #     print("T: ", t)
