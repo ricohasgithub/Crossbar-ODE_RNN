@@ -21,26 +21,26 @@ class LSTM_RNN_Model(nn.Module):
         self.lstm2 = nn.LSTMCell(hidden_layer_size, hidden_layer_size)
         self.linear = Linear(hidden_layer_size, output_layer_size, self.cb)
     
-        def forward(self, input, future = 0):
+    def forward(self, input, future = 0):
 
-            outputs = []
+        outputs = []
 
-            h_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
-            c_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
-            h_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
-            c_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
+        h_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
+        c_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
+        h_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
+        c_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
 
-            for input_t in input.split(1, dim=1):
-                h_t, c_t = self.lstm1(input_t, (h_t, c_t))
-                h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
-                output = self.linear(h_t2)
-                outputs += [output]
+        for input_t in input.split(1, dim=1):
+            h_t, c_t = self.lstm1(input_t, (h_t, c_t))
+            h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
+            output = self.linear(h_t2)
+            outputs += [output]
 
-            for i in range(future):
-                h_t, c_t = self.lstm1(output, (h_t, c_t))
-                h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
-                output = self.linear(h_t2)
-                outputs += [output]
+        for i in range(future):
+            h_t, c_t = self.lstm1(output, (h_t, c_t))
+            h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
+            output = self.linear(h_t2)
+            outputs += [output]
 
-            outputs = torch.cat(outputs, dim=1)
-            return outputs
+        outputs = torch.cat(outputs, dim=1)
+        return outputs
