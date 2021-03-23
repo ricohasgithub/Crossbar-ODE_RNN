@@ -6,7 +6,7 @@ import torch.optim as optim
 from networks.lstm_rnn.lstm_rnn_model import LSTM_RNN_Model
 
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 pi = 3.14159265359
 
@@ -61,6 +61,9 @@ val_split_index = example_data_length - int(0.25 * example_data_length)
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 loss_function = nn.MSELoss()
 
+fig3, ax3 = plt.subplots()
+fig3.suptitle('LSTM RNN Error')
+
 for epoch in range(epochs):
 
     print("EPOCH: ", epoch)
@@ -95,3 +98,24 @@ for epoch in range(epochs):
     training_loss = []
     validation_loss = []
 
+ax3.plot(list(range(epochs)),
+            training_loss_history,
+            linewidth=1, marker = 's',
+            color='black')
+
+ax3.plot(list(range(epochs)),
+        validation_loss_history,
+        linewidth=1, marker = 's',
+        color='c')
+
+ax3.legend(('Training Loss', 'Validation Loss'), loc='right')
+
+ax3.spines['right'].set_visible(False)
+ax3.spines['top'].set_visible(False)
+
+plt.setp(ax3, xlabel='Epoch')
+plt.setp(ax3, ylabel='RMS Prediction Accuracy')
+
+#fig3.savefig('output/fig5/2.png', dpi=600, transparent=True)
+
+plt.show()
