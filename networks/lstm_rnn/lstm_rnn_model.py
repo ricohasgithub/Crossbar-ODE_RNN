@@ -2,9 +2,12 @@
 import torch
 import torch.nn as nn
 
+from utils.linear import Linear
+from crossbar.crossbar import crossbar
+
 class LSTM_RNN_Model(nn.Module):
 
-    def __init__(self, input_layer_size, hidden_layer_size, output_layer_size):
+    def __init__(self, input_layer_size, hidden_layer_size, output_layer_size, device_params):
 
         super(LSTM_RNN_Model, self).__init__()
 
@@ -12,9 +15,11 @@ class LSTM_RNN_Model(nn.Module):
         self.hidden_layer_size = hidden_layer_size
         self.output_layer_size = output_layer_size
 
+        self.cb = crossbar(device_params)
+
         self.lstm1 = nn.LSTMCell(input_layer_size, hidden_layer_size)
         self.lstm2 = nn.LSTMCell(hidden_layer_size, hidden_layer_size)
-        self.lstm2 = nn.LSTMCell(hidden_layer_size, output_layer_size)
+        self.linear = Linear(hidden_layer_size, output_layer_size, self.cb)
     
         def forward(self, input, future = 0):
 
