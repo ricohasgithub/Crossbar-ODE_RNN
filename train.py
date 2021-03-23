@@ -44,11 +44,12 @@ data = [((y[:, i:i+tw].reshape(-1, size, 1), x[:, i:i+tw].reshape(-1, 1, 1)),
 train_data, test_start = data[:cutoff], data[cutoff]
 
 model = LSTM_RNN_Model(1, 20, 1, device_params)
+model.float()
 
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
-epochs = 20
+epochs = 30
 
 training_loss_history = []
 validation_loss_history = []

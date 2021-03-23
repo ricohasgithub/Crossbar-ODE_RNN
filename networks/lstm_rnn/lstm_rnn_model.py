@@ -25,10 +25,10 @@ class LSTM_RNN_Model(nn.Module):
 
         outputs = []
 
-        h_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
-        c_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
-        h_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
-        c_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.double)
+        h_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.float)
+        c_t = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.float)
+        h_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.float)
+        c_t2 = torch.zeros(input.size(0), self.hidden_layer_size, dtype=torch.float)
 
         for input_t in input.split(1, dim=1):
             h_t, c_t = self.lstm1(input_t, (h_t, c_t))
