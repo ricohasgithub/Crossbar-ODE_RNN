@@ -383,4 +383,3 @@ def print_mapping(tensors, mapping, crossbar_size):
     values = cb[torch.nonzero(cb, as_tuple=True)].tolist()
     for val in zip(rows,cols,values):
         print(val[0], val[1], val[2], sep=", ")
-

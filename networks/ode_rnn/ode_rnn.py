@@ -6,8 +6,8 @@ from utils.linear import Linear
 from crossbar.crossbar import crossbar
 from utils.observer import Observer
 
-from networks.node_rnn import NODE_RNN
-from networks.node_rnn_decoder import NODE_RNN_Decoder
+from .node_rnn import NODE_RNN
+from .node_rnn_decoder import NODE_RNN_Decoder
 
 class ODE_RNN(nn.Module):
 

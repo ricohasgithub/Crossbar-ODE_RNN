@@ -5,7 +5,8 @@ import torch.nn as nn
 from utils.linear import Linear
 from crossbar.crossbar import crossbar
 from utils.observer import Observer
-from networks.node_rnn import NODE_RNN
+
+from .node_rnn import NODE_RNN
 
 class NODE_RNN_Decoder(nn.Module):
 
