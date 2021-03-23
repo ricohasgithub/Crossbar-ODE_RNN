@@ -43,7 +43,7 @@ data = [((y[:, i:i+tw].reshape(-1, size, 1), x[:, i:i+tw].reshape(-1, 1, 1)),
          (y[:, i+tw:i+tw+1].reshape(-1, size))) for i in range(y.size(1) - tw)]
 train_data, test_start = data[:cutoff], data[cutoff]
 
-model = LSTM_RNN_Model(1, 20, 1, device_params)
+model = LSTM_RNN_Model(1, 25, 1, device_params)
 model.float()
 
 criterion = nn.MSELoss()
@@ -69,17 +69,20 @@ for epoch in range(epochs):
     validation_loss = []
 
     for i, (example, label) in enumerate(train_data):
+
+        # Get batch sequence length of 25
+        c_example = example[0].reshape(25, -1)
         
         # Validation
         if i > val_split_index:
             with torch.no_grad():
-                prediction = model(example[0])
+                prediction = model(c_example)
                 loss = loss_function(prediction, label)
                 validation_loss.append(loss)
         else:
             # Training
             optimizer.zero_grad()
-            prediction = model(example[0])
+            prediction = model(c_example)
             loss = loss_function(prediction, label)
             training_loss.append(loss)
             loss.backward()
@@ -91,3 +94,4 @@ for epoch in range(epochs):
     
     training_loss = []
     validation_loss = []
+
