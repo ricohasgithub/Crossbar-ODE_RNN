@@ -94,6 +94,10 @@ for i in range(1):
 
     print("Model", i, "| elapsed time:", "{:5.2f}".format((time.time() - start_time) / 60), "min")
 
+    # Load a presaved model -- comment out figure 2
+    # model = ODE_RNN(1, 4, 1, device_params, time_steps)
+    # model.load_state_dict(torch.load("output/models/model.pt"))
+
     model = ODE_RNN(1, 4, 1, device_params, time_steps)
     torch.save(model.state_dict(), "output/models/model.pt")
     losses, val_losses = train.train(train_data, model, epochs)
@@ -108,7 +112,7 @@ for i in range(1):
     ax1.plot(torch.cat((x.view(-1)[cutoff + tw - 1].view(-1), times.view(-1)), axis=0),
              torch.cat(
                  (y.view(-1)[cutoff + tw - 1].view(-1), output.view(-1)), axis=0),
-             'o-',
+             'o',
              linewidth=1,
              color='aqua',
              markerfacecolor='none',
@@ -136,7 +140,7 @@ for i in range(1):
                 edgecolors='deeppink',
                 facecolors='none')
 
-    #
+    
     ax3.plot(list(range(epochs)),
              losses,
              linewidth=1, marker = 's',
@@ -151,10 +155,12 @@ for i in range(1):
 
     unmapped_weights = torch.cat([tensor.reshape(-1).detach() for tensor in model.cb.tensors], axis=0)
     ax4.hist(unmapped_weights.numpy().reshape(-1), bins=20, color='pink')
+    plt.setp(ax4, ylabel='# of weights in the bin')
 
-    left_mapped_weights = torch.cat([model.cb.W[m[0]:m[0]+m[2], m[1]:m[1]+m[3]:2].reshape(-1).detach() for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
-    right_mapped_weights = torch.cat([model.cb.W[m[0]+1:m[0]+m[2]+1, m[1]+1:m[1]+m[3]+1:2].reshape(-1).detach() for m in model.cb.mapped], axis=0).numpy().reshape(-1,1)
-    ax5.hist(np.concatenate((left_mapped_weights, right_mapped_weights), axis=1), stacked=True, bins=100)
+    with torch.no_grad():
+        left_mapped_weights = torch.cat([model.cb.W[m[0]:m[0]+m[2], m[1]:m[1]+m[3]:2].reshape(-1) for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
+        right_mapped_weights = torch.cat([model.cb.W[m[0]+1:m[0]+m[2]+1, m[1]+1:m[1]+m[3]+1:2].reshape(-1) for m in model.cb.mapped], axis=0).numpy().reshape(-1,1)
+        ax5.hist(np.concatenate((left_mapped_weights, right_mapped_weights), axis=1), stacked=True, bins=100)
 
     weights = [model.cb.W[coord[0]:coord[0]+coord[2], coord[1]*2:coord[1]*2+coord[3]*2] for coord in model.cb.mapped] + [model.cb.W]
     vmax = max(torch.max(weight) for weight in weights)
@@ -163,6 +169,8 @@ for i in range(1):
     with torch.no_grad():
         for i, weight in enumerate(weights):
             sns.heatmap(weight, vmax=vmax, vmin=vmin, cmap=cmap, square=True, cbar=False, ax=ax_cmap[i])
+
+    print(model.cb.conductance_states.size())
 
 ax1.plot(x.squeeze()[:cutoff+num_predict+tw], y.squeeze()[:cutoff +
                                                           num_predict+tw], linewidth=0.5, color='k', linestyle='dashed')
@@ -176,7 +184,7 @@ ax1.legend(('predictions', 'interpolation', 'data'), loc='lower left')
 ax2.spines['right'].set_visible(False)
 ax2.spines['top'].set_visible(False)
 
-plt.setp(ax2, xlabel='t')
+plt.setp(ax2, xlabel='t (s)')
 plt.setp(ax2, ylabel='norm of hidden state')
 
 ax3.spines['right'].set_visible(False)
@@ -192,6 +200,8 @@ plt.setp(ax4, xlabel='Unmapped Weights')
 ax5.spines['right'].set_visible(False)
 ax5.spines['top'].set_visible(False)
 plt.setp(ax5, xlabel='Mapped Weights')
+plt.setp(ax5, ylabel='# of weights in the bin')
+ax5.legend(('Left Weights', 'Right Weights'), loc='lower right')
 
 fig1.savefig('output/fig5/1.png', dpi=600, transparent=True)
 fig3.savefig('output/fig5/2.png', dpi=600, transparent=True)
