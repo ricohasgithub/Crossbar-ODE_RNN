@@ -13,7 +13,7 @@ from networks.latent_ode.latent_ode_decoder import Latent_ODE_Decoder as Decoder
 
 import numpy as np
 import numpy.random as npr
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 def generate_spiral2d(nspiral=1000,
                       ntotal=500,
@@ -57,13 +57,12 @@ def generate_spiral2d(nspiral=1000,
     xs, ys = rw_cc * np.cos(zs_cc) + 5., rw_cc * np.sin(zs_cc)
     orig_traj_cc = np.stack((xs, ys), axis=1)
 
-    if savefig:
-        plt.figure()
-        plt.plot(orig_traj_cw[:, 0], orig_traj_cw[:, 1], label='clock')
-        plt.plot(orig_traj_cc[:, 0], orig_traj_cc[:, 1], label='counter clock')
-        plt.legend()
-        plt.savefig('./ground_truth.png', dpi=500)
-        print('Saved ground truth spiral at {}'.format('./ground_truth.png'))
+    plt.figure()
+    plt.plot(orig_traj_cw[:, 0], orig_traj_cw[:, 1], label='clock')
+    plt.plot(orig_traj_cc[:, 0], orig_traj_cc[:, 1], label='counter clock')
+    plt.legend()
+    plt.savefig('./ground_truth.png', dpi=500)
+    print('Saved ground truth spiral at {}'.format('./ground_truth.png'))
 
     # sample starting timestamps
     orig_trajs = []
@@ -185,3 +184,76 @@ params = (list(func.parameters()) + list(dec.parameters()) + list(rec.parameters
 # Build training devices
 optimizer = optim.Adam(params, lr=0.01)
 loss_meter = RunningAverageMeter()
+
+for itr in range(1, 2000):
+    optimizer.zero_grad()
+    # backward in time to infer q(z_0)
+    h = rec.initHidden()
+    for t in reversed(range(samp_trajs.size(1))):
+        obs = samp_trajs[:, t, :]
+        out, h = rec.forward(obs, h)
+    qz0_mean, qz0_logvar = out[:, :latent_dim], out[:, latent_dim:]
+    epsilon = torch.randn(qz0_mean.size())
+    z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
+
+    # forward in time and solve ode for reconstructions
+    pred_z = odeint(func, z0, samp_ts).permute(1, 0, 2)
+    pred_x = dec(pred_z)
+
+    # compute loss
+    noise_std_ = torch.zeros(pred_x.size()) + noise_std
+    noise_logvar = 2. * torch.log(noise_std_)
+    logpx = log_normal_pdf(
+        samp_trajs, pred_x, noise_logvar).sum(-1).sum(-1)
+    pz0_mean = pz0_logvar = torch.zeros(z0.size())
+    analytic_kl = normal_kl(qz0_mean, qz0_logvar,
+                            pz0_mean, pz0_logvar).sum(-1)
+    loss = torch.mean(-logpx + analytic_kl, dim=0)
+    loss.backward()
+    optimizer.step()
+    loss_meter.update(loss.item())
+
+    print('Iter: {}, running avg elbo: {:.4f}'.format(itr, -loss_meter.avg))
+
+with torch.no_grad():
+    # sample from trajectorys' approx. posterior
+    h = rec.initHidden()
+    for t in reversed(range(samp_trajs.size(1))):
+        obs = samp_trajs[:, t, :]
+        out, h = rec.forward(obs, h)
+    qz0_mean, qz0_logvar = out[:, :latent_dim], out[:, latent_dim:]
+    epsilon = torch.randn(qz0_mean.size())
+    z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
+    orig_ts = torch.from_numpy(orig_ts).float()
+
+    # take first trajectory for visualization
+    z0 = z0[0]
+
+    ts_pos = np.linspace(0., 2. * np.pi, num=2000)
+    ts_neg = np.linspace(-np.pi, 0., num=2000)[::-1].copy()
+    ts_pos = torch.from_numpy(ts_pos).float()
+    ts_neg = torch.from_numpy(ts_neg).float()
+
+    zs_pos = odeint(func, z0, ts_pos)
+    zs_neg = odeint(func, z0, ts_neg)
+
+    xs_pos = dec(zs_pos)
+    xs_neg = torch.flip(dec(zs_neg), dims=[0])
+
+xs_pos = xs_pos.cpu().numpy()
+xs_neg = xs_neg.cpu().numpy()
+orig_traj = orig_trajs[0].cpu().numpy()
+samp_traj = samp_trajs[0].cpu().numpy()
+
+plt.figure()
+plt.plot(orig_traj[:, 0], orig_traj[:, 1],
+        'g', label='true trajectory')
+plt.plot(xs_pos[:, 0], xs_pos[:, 1], 'r',
+        label='learned trajectory (t>0)')
+plt.plot(xs_neg[:, 0], xs_neg[:, 1], 'c',
+        label='learned trajectory (t<0)')
+plt.scatter(samp_traj[:, 0], samp_traj[
+            :, 1], label='sampled data', s=3)
+plt.legend()
+plt.savefig('./vis.png', dpi=500)
+print('Saved visualization figure at {}'.format('./vis.png'))
