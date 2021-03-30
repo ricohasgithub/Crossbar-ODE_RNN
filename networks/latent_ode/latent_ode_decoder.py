@@ -15,8 +15,8 @@ class Latent_ODE_Decoder(nn.Module):
         self.cb = cb
 
         # Construct model and layers
-        self.linear_out1 = Linear(latent_dim, nhidden, self.cb)
-        self.linear_out2 = Linear(nhidden, obs_dim, self.cb)
+        self.linear_out1 = nn.Linear(latent_dim, nhidden)
+        self.linear_out2 = nn.Linear(nhidden, obs_dim)
         self.nonlinear = nn.ReLU()
 
     # Taking a sequence, this predicts the next N points, where
@@ -26,8 +26,8 @@ class Latent_ODE_Decoder(nn.Module):
         out = self.linear_out2(out)
         return out
 
-    def remap(self):
-        self.linear_out.remap()
+    # def remap(self):
+    #     self.linear_out.remap()
     
-    def use_cb(self, state):
-        self.linear_out.use_cb(state)
+    # def use_cb(self, state):
+    #     self.linear_out.use_cb(state)

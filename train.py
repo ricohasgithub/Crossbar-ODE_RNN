@@ -61,7 +61,7 @@ def generate_spiral2d(nspiral=1000,
     plt.plot(orig_traj_cw[:, 0], orig_traj_cw[:, 1], label='clock')
     plt.plot(orig_traj_cc[:, 0], orig_traj_cc[:, 1], label='counter clock')
     plt.legend()
-    plt.savefig('./ground_truth.png', dpi=500)
+    plt.savefig('./output/latent_ode/ground_truth.png', dpi=600, transparent=True)
     print('Saved ground truth spiral at {}'.format('./ground_truth.png'))
 
     # sample starting timestamps
@@ -254,5 +254,5 @@ plt.plot(xs_neg[:, 0], xs_neg[:, 1], 'c',
 plt.scatter(samp_traj[:, 0], samp_traj[
             :, 1], label='sampled data', s=3)
 plt.legend()
-plt.savefig('./vis.png', dpi=500)
+plt.savefig('./output/latent_ode/vis.png', dpi=600, transparent=True)
 print('Saved visualization figure at {}'.format('./vis.png'))
