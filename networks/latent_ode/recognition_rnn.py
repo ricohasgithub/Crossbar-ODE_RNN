@@ -8,11 +8,11 @@ from utils.observer import Observer
 
 class Recognition_RNN(nn.Module):
 
-    def __init__(self, latent_dims, obs_dims, nhidden, nbatch, device_params):
+    def __init__(self, latent_dims, obs_dims, nhidden, nbatch, cb):
 
         super(Recognition_RNN, self).__init__()
 
-        self.cb = crossbar(device_params)
+        self.cb = cb
 
         self.nhidden = nhidden
         self.nbatch = nbatch

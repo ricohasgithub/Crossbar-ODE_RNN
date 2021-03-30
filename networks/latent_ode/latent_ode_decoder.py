@@ -15,7 +15,6 @@ class Latent_ODE_Decoder(nn.Module):
         self.cb = cb
 
         # Construct model and layers
-        self.output_size = output_size
         self.linear_out1 = Linear(latent_dim, nhidden, self.cb)
         self.linear_out2 = Linear(nhidden, obs_dim, self.cb)
         self.nonlinear = nn.ReLU()

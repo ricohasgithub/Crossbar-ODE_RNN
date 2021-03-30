@@ -126,8 +126,8 @@ def normal_kl(mu1, lv1, mu2, lv2):
 device_params = {"Vdd": 1.8,
                  "r_wl": 20,
                  "r_bl": 20,
-                 "m": 32,
-                 "n": 32,
+                 "m": 512,
+                 "n": 512,
                  "r_on": 1e4,
                  "r_off": 1e5,
                  "dac_resolution": 4,
@@ -144,7 +144,6 @@ device_params = {"Vdd": 1.8,
 }
 
 # Model params
-
 latent_dim = 4
 nhidden = 20
 rnn_nhidden = 25
