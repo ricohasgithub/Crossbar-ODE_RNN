@@ -51,8 +51,12 @@ device_params = {"Vdd": 1.8,
                  "r_cmos_transistor": 20,
                  "p_stuck_on": 0.01,
                  "p_stuck_off": 0.01,
-                 "method": "viability",
-                 "viability": 0.2,
+                 "method": "linear",
+                 "r_on_mean": 1e4,
+                 "r_on_stddev": 1e3,
+                 "r_off_mean": 1e5,
+                 "r_off_stddev": 1e4,
+                 "device_resolution": 4,
 }
 
 # MAKE DATA
@@ -160,7 +164,7 @@ for i in range(1):
     with torch.no_grad():
         left_mapped_weights = torch.cat([model.cb.W[m[0]:m[0]+m[2], m[1]:m[1]+m[3]:2].reshape(-1) for m in model.cb.mapped], axis=0).numpy().reshape(-1, 1)
         right_mapped_weights = torch.cat([model.cb.W[m[0]+1:m[0]+m[2]+1, m[1]+1:m[1]+m[3]+1:2].reshape(-1) for m in model.cb.mapped], axis=0).numpy().reshape(-1,1)
-        ax5.hist(np.concatenate((left_mapped_weights, right_mapped_weights), axis=1), stacked=True, bins=100)
+        ax5.hist(np.concatenate((left_mapped_weights, right_mapped_weights), axis=1), stacked=True, bins=20)
 
     weights = [model.cb.W[coord[0]:coord[0]+coord[2], coord[1]*2:coord[1]*2+coord[3]*2] for coord in model.cb.mapped] + [model.cb.W]
     vmax = max(torch.max(weight) for weight in weights)
