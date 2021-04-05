@@ -17,8 +17,8 @@ class Recognition_RNN(nn.Module):
         self.nhidden = nhidden
         self.nbatch = nbatch
 
-        self.i2h = nn.Linear(obs_dims + nhidden, nhidden)
-        self.h2o = nn.Linear(nhidden, latent_dims * 2)
+        self.i2h = Linear(obs_dims + nhidden, nhidden, cb)
+        self.h2o = Linear(nhidden, latent_dims * 2, cb)
 
     def forward(self, x, h):
         combined = torch.cat((x, h), dim=1)
@@ -29,10 +29,10 @@ class Recognition_RNN(nn.Module):
     def initHidden(self):
         return torch.zeros(self.nbatch, self.nhidden)
     
-    # def remap(self):
-    #     self.i2h.remap()
-    #     self.h2o.remap()
+    def remap(self):
+        self.i2h.remap()
+        self.h2o.remap()
     
-    # def use_cb(self, state):
-    #     self.i2h.use_cb(state)
-    #     self.h2o.use_cb(state)
+    def use_cb(self, state):
+        self.i2h.use_cb(state)
+        self.h2o.use_cb(state)
