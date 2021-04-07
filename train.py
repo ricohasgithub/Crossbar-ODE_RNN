@@ -185,15 +185,28 @@ optimizer = optim.Adam(params, lr=0.01)
 loss_meter = RunningAverageMeter()
 
 for itr in range(1, 2000):
+
     optimizer.zero_grad()
+
     # Backward in time to infer q(z_0)
     h = rec.initHidden()
+
     for t in reversed(range(samp_trajs.size(1))):
         obs = samp_trajs[:, t, :]
         out, h = rec.forward(obs, h)
+
+    out = torch.transpose(out, 0, 1)
+    # print("out: ", out.size())
+    h = torch.transpose(h, 0, 1)
+    # print("out: ", h.size())
+
     qz0_mean, qz0_logvar = out[:, :latent_dim], out[:, latent_dim:]
     epsilon = torch.randn(qz0_mean.size())
     z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
+
+    #print(z0.size())
+
+    # z0 = torch.transpose(z0, 0, 1)
 
     # Forward in time and solve ode for reconstructions
     pred_z = odeint(func, z0, samp_ts).permute(1, 0, 2)

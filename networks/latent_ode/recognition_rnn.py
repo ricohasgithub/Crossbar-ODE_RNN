@@ -28,7 +28,6 @@ class Recognition_RNN(nn.Module):
         # print("h: ", h.size())
 
         combined = torch.cat((x, h), dim=0)
-        print("combined: ", combined.size())
 
         h = torch.tanh(self.i2h(combined))
         out = self.h2o(h)
