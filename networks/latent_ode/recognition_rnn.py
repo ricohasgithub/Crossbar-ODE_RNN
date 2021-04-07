@@ -21,13 +21,22 @@ class Recognition_RNN(nn.Module):
         self.h2o = Linear(nhidden, latent_dims * 2, cb)
 
     def forward(self, x, h):
-        combined = torch.cat((x, h), dim=1)
+
+        x = torch.transpose(x, 0, 1)
+        # print("x:", x.size())
+        # # h = torch.transpose(h, 0, 1)
+        # print("h: ", h.size())
+
+        combined = torch.cat((x, h), dim=0)
+        print("combined: ", combined.size())
+
         h = torch.tanh(self.i2h(combined))
         out = self.h2o(h)
         return out, h
 
     def initHidden(self):
-        return torch.zeros(self.nbatch, self.nhidden)
+        # return torch.zeros(self.nbatch, self.nhidden)
+        return torch.zeros(self.nhidden, self.nbatch)
     
     def remap(self):
         self.i2h.remap()

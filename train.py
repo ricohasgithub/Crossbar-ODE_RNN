@@ -126,8 +126,8 @@ def normal_kl(mu1, lv1, mu2, lv2):
 device_params = {"Vdd": 1.8,
                  "r_wl": 20,
                  "r_bl": 20,
-                 "m": 512,
-                 "n": 512,
+                 "m": 1024,
+                 "n": 1024,
                  "r_on": 1e4,
                  "r_off": 1e5,
                  "dac_resolution": 4,
@@ -186,7 +186,7 @@ loss_meter = RunningAverageMeter()
 
 for itr in range(1, 2000):
     optimizer.zero_grad()
-    # backward in time to infer q(z_0)
+    # Backward in time to infer q(z_0)
     h = rec.initHidden()
     for t in reversed(range(samp_trajs.size(1))):
         obs = samp_trajs[:, t, :]
@@ -195,7 +195,7 @@ for itr in range(1, 2000):
     epsilon = torch.randn(qz0_mean.size())
     z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
 
-    # forward in time and solve ode for reconstructions
+    # Forward in time and solve ode for reconstructions
     pred_z = odeint(func, z0, samp_ts).permute(1, 0, 2)
     pred_x = dec(pred_z)
 
