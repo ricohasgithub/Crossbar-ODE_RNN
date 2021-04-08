@@ -26,7 +26,7 @@ class Latent_ODE_Net(nn.Module):
 
         self.nfe += 1
 
-        x = torch.transpose(x, 0, 1)
+        # x = torch.transpose(x, 0, 1)
 
         out = self.linear1(x)
         out = self.elu(out)
@@ -34,7 +34,7 @@ class Latent_ODE_Net(nn.Module):
         out = self.elu(out)
         out = self.linear3(out)
 
-        out = torch.transpose(out, 0, 1)
+        # out = torch.transpose(out, 0, 1)
         
         return out
 

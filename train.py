@@ -15,6 +15,8 @@ import numpy as np
 import numpy.random as npr
 import matplotlib.pyplot as plt
 
+import seaborn as sns
+
 def generate_spiral2d(nspiral=1000,
                       ntotal=500,
                       nsample=100,
@@ -122,12 +124,12 @@ def normal_kl(mu1, lv1, mu2, lv2):
     kl = lstd2 - lstd1 + ((v1 + (mu1 - mu2) ** 2.) / (2. * v2)) - .5
     return kl
 
-# DEVICE PARAMS for convenience
+# DEVICE PARAMS for convenience.
 device_params = {"Vdd": 1.8,
                  "r_wl": 20,
                  "r_bl": 20,
-                 "m": 1024,
-                 "n": 1024,
+                 "m": 512,
+                 "n": 512,
                  "r_on": 1e4,
                  "r_off": 1e5,
                  "dac_resolution": 4,
@@ -139,8 +141,12 @@ device_params = {"Vdd": 1.8,
                  "r_cmos_transistor": 20,
                  "p_stuck_on": 0.01,
                  "p_stuck_off": 0.01,
-                 "method": "viability",
-                 "viability": 0.2,
+                 "method": "linear",
+                 "r_on_mean": 1e4,
+                 "r_on_stddev": 1e3,
+                 "r_off_mean": 1e5,
+                 "r_off_stddev": 1e4,
+                 "device_resolution": 4,
 }
 
 # Model params
@@ -204,15 +210,13 @@ for itr in range(1, 2000):
     epsilon = torch.randn(qz0_mean.size())
     z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
 
-    #print(z0.size())
-
-    # z0 = torch.transpose(z0, 0, 1)
+    z0 = torch.transpose(z0, 0, 1)
 
     # Forward in time and solve ode for reconstructions
     pred_z = odeint(func, z0, samp_ts).permute(1, 0, 2)
     pred_x = dec(pred_z)
 
-    # compute loss
+    # Compute loss
     noise_std_ = torch.zeros(pred_x.size()) + noise_std
     noise_logvar = 2. * torch.log(noise_std_)
     logpx = log_normal_pdf(
@@ -228,7 +232,7 @@ for itr in range(1, 2000):
     print('Iter: {}, running avg elbo: {:.4f}'.format(itr, -loss_meter.avg))
 
 with torch.no_grad():
-    # sample from trajectorys' approx. posterior
+    # Sample from trajectorys' approx. posterior
     h = rec.initHidden()
     for t in reversed(range(samp_trajs.size(1))):
         obs = samp_trajs[:, t, :]
@@ -238,7 +242,7 @@ with torch.no_grad():
     z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
     orig_ts = torch.from_numpy(orig_ts).float()
 
-    # take first trajectory for visualization
+    # Take first trajectory for visualization
     z0 = z0[0]
 
     ts_pos = np.linspace(0., 2. * np.pi, num=2000)
