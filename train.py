@@ -11,11 +11,24 @@ from networks.latent_ode.latent_ode_net import Latent_ODE_Net as LatentODEfunc
 from networks.latent_ode.recognition_rnn import Recognition_RNN as RecognitionRNN
 from networks.latent_ode.latent_ode_decoder import Latent_ODE_Decoder as Decoder
 
+import os
+import argparse
 import numpy as np
 import numpy.random as npr
 import matplotlib.pyplot as plt
 
 import seaborn as sns
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--adjoint', type=eval, default=False)
+parser.add_argument('--visualize', type=eval, default=True)
+parser.add_argument('--niters', type=int, default=2000)
+parser.add_argument('--lr', type=float, default=0.01)
+parser.add_argument('--gpu', type=int, default=0)
+parser.add_argument('--train_dir', type=str, default=None)
+
+args = parser.parse_args()
 
 def generate_spiral2d(nspiral=1000,
                       ntotal=500,
@@ -213,7 +226,7 @@ for itr in range(1, 2000):
     z0 = torch.transpose(z0, 0, 1)
 
     # Forward in time and solve ode for reconstructions
-    pred_z = odeint(func, z0, samp_ts).permute(1, 0, 2)
+    pred_z = odeint(func, z0, samp_ts, method="euler").permute(1, 0, 2)
     pred_x = dec(pred_z)
 
     # Compute loss
@@ -250,8 +263,8 @@ with torch.no_grad():
     ts_pos = torch.from_numpy(ts_pos).float()
     ts_neg = torch.from_numpy(ts_neg).float()
 
-    zs_pos = odeint(func, z0, ts_pos)
-    zs_neg = odeint(func, z0, ts_neg)
+    zs_pos = odeint(func, z0, ts_pos, method="euler")
+    zs_neg = odeint(func, z0, ts_neg, method="euler")
 
     xs_pos = dec(zs_pos)
     xs_neg = torch.flip(dec(zs_neg), dims=[0])

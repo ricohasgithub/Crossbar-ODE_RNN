@@ -20,6 +20,7 @@ class Latent_ODE(nn.Module):
         self.cb = cb
 
         self.ode_rnn = ODE_RNN(input_size, hidden_layer_size, output_size, device_params, time_steps, cb)
+        self.decoder = Decoder(latent_dims, obs_dims, nhidden, cb)
 
         self.nhidden = nhidden
         self.nbatch = nbatch
@@ -29,3 +30,6 @@ class Latent_ODE(nn.Module):
 
     def forward(self, x, h):
         pass
+
+    def initHidden(self):
+        return torch.zeros(self.nhidden, self.nbatch)
