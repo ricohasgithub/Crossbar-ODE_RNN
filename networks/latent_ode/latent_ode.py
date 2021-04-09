@@ -13,9 +13,19 @@ from utils.observer import Observer
 
 class Latent_ODE(nn.Module):
 
-    def __init__(self, input_size, hidden_layer_size, output_size, device_params, time_steps):
+    def __init__(self, latent_dims, obs_dims, nhidden, input_size, hidden_layer_size, output_size, device_params, time_steps, cb):
 
         super(Latent_ODE, self).__init__()
 
-        self.ode_rnn = ODE_RNN(input_size, hidden_layer_size, output_size, device_params, time_steps)
-        self.decoder = Decoder()
+        self.cb = cb
+
+        self.ode_rnn = ODE_RNN(input_size, hidden_layer_size, output_size, device_params, time_steps, cb)
+
+        self.nhidden = nhidden
+        self.nbatch = nbatch
+
+        self.i2h = Linear(obs_dims + nhidden, nhidden, cb)
+        self.h2o = Linear(nhidden, latent_dims * 2, cb)
+
+    def forward(self, x, h):
+        pass

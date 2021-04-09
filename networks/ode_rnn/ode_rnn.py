@@ -11,12 +11,16 @@ from .node_rnn_decoder import NODE_RNN_Decoder
 
 class ODE_RNN(nn.Module):
 
-    def __init__(self, input_size, hidden_layer_size, output_size, device_params, time_steps):
+    def __init__(self, input_size, hidden_layer_size, output_size, device_params, time_steps, cb=None):
 
         super(ODE_RNN, self).__init__()
 
         self.N = time_steps
-        self.cb = crossbar(device_params)
+
+        if cb is None:
+            self.cb = crossbar(device_params)
+        else:
+            self.cb = cb
 
         # Construct model and layers
         self.node_rnn = NODE_RNN(input_size, hidden_layer_size, self.cb, self.N)
