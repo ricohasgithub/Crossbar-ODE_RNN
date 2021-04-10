@@ -21,6 +21,7 @@ class Latent_ODE_Decoder(nn.Module):
 
     # Taking a sequence, this predicts the next N points, where
     def forward(self, data):
+        data = torch.transpose(data, 0, 1)
         out = self.linear_out1(data)
         out = self.nonlinear(out)
         out = self.linear_out2(out)

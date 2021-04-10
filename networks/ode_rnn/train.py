@@ -21,7 +21,9 @@ def train(examples, model, epochs):
         validation_loss = []
 
         for i, (example, label) in enumerate(examples):
-            
+
+            print(example)
+       
             # Validation
             if i > val_split_index:
                 with torch.no_grad():

@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torchdiffeq import odeint
 from crossbar.crossbar import crossbar
 
+from networks.latent_ode.latent_ode import Latent_ODE as LatentODE
 from networks.latent_ode.latent_ode_net import Latent_ODE_Net as LatentODEfunc
 from networks.latent_ode.recognition_rnn import Recognition_RNN as RecognitionRNN
 from networks.latent_ode.latent_ode_decoder import Latent_ODE_Decoder as Decoder
@@ -226,11 +227,8 @@ for itr in range(1, 2000):
     z0 = torch.transpose(z0, 0, 1)
 
     # Forward in time and solve ode for reconstructions
-    pred_z = odeint(func, z0, samp_ts, method="euler").permute(1, 0, 2)
+    pred_z = odeint(func, z0, samp_ts).permute(1, 0, 2)
     pred_x = dec(pred_z)
-
-    # Reshape
-    pred_x = torch.reshape(pred_x, samp_trajs.size())
 
     # Compute loss
     noise_std_ = torch.zeros(pred_x.size()) + noise_std
@@ -238,11 +236,6 @@ for itr in range(1, 2000):
     logpx = log_normal_pdf(
         samp_trajs, pred_x, noise_logvar).sum(-1).sum(-1)
     pz0_mean = pz0_logvar = torch.zeros(z0.size())
-
-    # Reshape
-    pz0_mean = torch.transpose(pz0_mean, 0, 1)
-    pz0_logvar = torch.transpose(pz0_logvar, 0, 1)
-
     analytic_kl = normal_kl(qz0_mean, qz0_logvar,
                             pz0_mean, pz0_logvar).sum(-1)
     loss = torch.mean(-logpx + analytic_kl, dim=0)
